@@ -1,0 +1,53 @@
+<head>  
+  <title>Vote4it</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet"/>
+  <link href="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.4.5/bootstrap-editable/css/bootstrap-editable.css" rel="stylesheet"/>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/x-editable/1.4.5/bootstrap-editable/js/bootstrap-editable.min.js"></script>
+  <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+  <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+</head>
+
+<body>
+
+</body>
+
+<template name="layout">
+  <div class="container">
+    {{#if currentUser}}
+      <div class="row">
+        <div class="span6 headerSelect">
+          <a href="/">VOTE4IT</a>
+        </div>
+        <div class="span6">
+          <span class="pull-right">{{loginButtons align="right"}}</span>
+        </div>
+      </div>
+      {{ yield }}
+    {{else}}
+      {{> landing}}
+    {{/if}} 
+  </div>
+</template>
+
+<template name="landing">
+  <div class="pull-right">
+    {{loginButtons align="right"}}
+  </div>
+  <img src="logo.png"/>
+
+  <div class="text-center">
+    <p><strong>Vote4it let's you create polls for you and your friends.</strong></p>
+    <br/>
+    <label>Interested?</label>
+    <p>Sign in with a Google account and get started! What do you have to lose, it's free!</p>
+  </div> 
+</template>
+
+<template name="notFound">
+  <h1>This Page Does Not Exist!</h1>
+</template>
+
+<template name="loading">
+
+</template>

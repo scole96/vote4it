@@ -1,0 +1,46 @@
+<template name="polls">
+  <div class="well">
+    <h4>Open Polls</h4>
+    <div>
+      <ul class="unstyled">
+        {{#each this}}
+          <li class="item">
+            <a href="/poll/{{_id}}">{{name}}</a>
+          </li>
+        {{else}}
+          <li>No polls! Add one</li>
+        {{/each}}
+      </ul>
+      <span class="editable-container editable-inline" id="newItem" style="display:block">
+        <form id="newPollForm" class="form-inline editableform">
+          <input id="newPollInput" type="text" class="input-block-level" placeholder="Create a new poll" />
+        </form>
+      </span>
+    </div>
+  </div>
+</template>
+
+<template name="onepoll">
+  <div>
+    <h4>{{name}}</h4>
+    <div>
+      <ul class="sortable">
+        {{#each items}}
+          <li class="ui-state-default" id="{{id}}">
+            {{points id}}
+            <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>{{name}}
+          </li>
+        {{else}}
+          <li>Nothing to vote for! Add a few items.</li>
+        {{/each}}
+      </ul>
+      <span class="editable-container editable-inline" id="newItem" style="display:block">
+        <form id="newItemForm" class="form-inline editableform">
+          <input type="hidden" id="poll-id" value="{{_id}}"/>
+          <input type="text" id="item-name" placeholder="Add another item"/>
+        </form>
+      </span>
+      <a id="submit-vote" class="btn" data-poll-id="{{_id}}">Submit Your Vote</a>
+    </div>
+  </div>
+</template>
