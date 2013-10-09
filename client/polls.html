@@ -21,6 +21,14 @@
 </template>
 
 <template name="onepoll">
+  {{#if hasVoted}}
+    {{>results}}
+  {{else}}
+    {{>vote}}
+  {{/if}}
+</template>
+
+<template name="vote">
   <div>
     <h4>{{name}}</h4>
     <div>
@@ -41,6 +49,21 @@
         </form>
       </span>
       <a id="submit-vote" class="btn" data-poll-id="{{_id}}">Submit Your Vote</a>
+    </div>
+  </div>
+</template>
+
+<template name="results">
+  <div>
+    <h4>{{name}}</h4>
+    <div>
+      <p>Name (points)</p>
+      <ol class="">
+        {{#each sortedResults}}
+          <li>{{name}} ({{points}})</li>
+        {{/each}}
+      </ol>
+      <a id="revote">Re-vote</a>
     </div>
   </div>
 </template>
