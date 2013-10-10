@@ -42,17 +42,18 @@ Template.results.events(
 Template.results.sortedResults = () ->
   poll = Polls.findOne(Session.get("poll_id"))
   _.sortBy(poll.items, (item) ->
-    item.points = pointsFor item.id
+    item.points = pointsFor poll, item.id
     return item.points * -1
   )
 
 
-pointsFor = (item_id) ->
-  poll_id = Session.get("poll_id")
-  poll = Polls.findOne(poll_id)
+pointsFor = (poll, item_id) ->
   points = 0
   total = poll.items.length
   for vote in poll.votes
     location = _.indexOf(vote.votes, item_id+"")
-    points = points + (total - location)
+    if location>=0
+      points = points + (total - location)
+    else
+      points = 0
   points
