@@ -7,6 +7,9 @@ Meteor.publish("userData", () ->
   Meteor.users.find({_id: this.userId}, {fields: {'services.google.email':1}})
 )
 
+Meteor.publish('allUserData', () ->
+  Meteor.users.find({}, {fields:{'profile':1, 'services.google.email':1}})
+)
 
 ###
 Security

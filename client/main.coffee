@@ -2,7 +2,9 @@
 # Define Minimongo collections to match server/publish.js.
 @Polls = new Meteor.Collection("polls")
 
-
+Meteor.autosubscribe( () ->
+  Meteor.subscribe("allUserData");
+)
 ##### Tracking selected list in URL #####
 Router.configure
   layout: "layout"
