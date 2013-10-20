@@ -55,6 +55,9 @@
 <template name="results">
   <div>
     <h2>{{name}}</h2>
+    {{#if newItems}}
+      <span class="label label-warning">New items were added, you shold revote!</span>
+    {{/if}}
     <div>
       <p>Name (points)</p>
       <ol class="">

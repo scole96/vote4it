@@ -18,9 +18,7 @@ hasVoted = (poll) ->
 
 Template.vote.getOrderedItems = () ->
   result = []
-  votes = _.find(this.votes, (vote) ->
-    return vote.user_id is Meteor.userId()
-  )
+  votes = findUsersVote this, Meteor.userId()
   if votes
     for vote in votes.votes
       result.push _.find(this.items, (item) ->
@@ -33,6 +31,11 @@ Template.vote.getOrderedItems = () ->
   else
     result = this.items
   result
+
+findUsersVote = (poll, user_id) ->
+  _.find(poll.votes, (vote) ->
+    return vote.user_id is user_id
+  )
 
 Template.vote.events(
   'submit #newItemForm' : (event, template) ->
@@ -66,13 +69,16 @@ Template.results.events(
     Session.set("revote", true)
 )
 
+Template.results.newItems = () ->
+  votes = findUsersVote this, Meteor.userId()
+  this.items.length > votes.votes.length
+
 Template.results.sortedResults = () ->
   poll = Polls.findOne(Session.get("poll_id"))
   _.sortBy(poll.items, (item) ->
     item.points = pointsFor poll, item.id
     return item.points * -1
   )
-
 
 pointsFor = (poll, item_id) ->
   points = 0
