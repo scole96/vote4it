@@ -10,7 +10,25 @@ Template.polls.events(
 
 Template.onepoll.hasVoted = () ->
   poll = Polls.findOne(Session.get("poll_id"))
-  _.contains(_.pluck(poll.votes, "user_id"), Meteor.userId())
+  revote = Session.get("revote")
+  return true if hasVoted(poll) and not revote
+
+hasVoted = (poll) ->
+   _.contains(_.pluck(poll.votes, "user_id"), Meteor.userId())
+
+Template.vote.getOrderedItems = () ->
+  result = []
+  votes = _.find(this.votes, (vote) ->
+    return vote.user_id is Meteor.userId()
+  )
+  if votes
+    for vote in votes.votes
+      result.push _.find(this.items, (item) ->
+        return Number item.id == Number vote
+      )
+  else
+    result = this.items
+  result
 
 Template.vote.events(
   'submit #newItemForm' : (event, template) ->
@@ -22,11 +40,16 @@ Template.vote.events(
   'click #submit-vote' : (event, template) ->
     sortedIDs = $(".sortable").sortable( "toArray" )
     pollId = $(event.target).data("poll-id")
+    poll = Polls.findOne(pollId)
+    if hasVoted(poll)
+      Polls.update( pollId, { $pull: { "votes" : { user_id: Meteor.userId() } } } )
+    
     data =
       user_id: Meteor.userId()
       votes: sortedIDs
       date: new Date()
     Polls.update(pollId, $addToSet: votes: data)
+    Session.set("revote", null)
 )
         
 Template.vote.rendered = () ->
@@ -36,7 +59,7 @@ Template.vote.rendered = () ->
 Template.results.events(
   'click #revote' : (event, template) ->
     pollId = Session.get("poll_id")
-    Polls.update( pollId, { $pull: { "votes" : { user_id: Meteor.userId() } } } )
+    Session.set("revote", true)
 )
 
 Template.results.sortedResults = () ->
