@@ -26,6 +26,10 @@ Template.vote.getOrderedItems = () ->
       result.push _.find(this.items, (item) ->
         return Number item.id == Number vote
       )
+    result_ids = _.pluck(result, "id")
+    for item in this.items
+      if !_.contains(result_ids, item.id)
+        result.push item
   else
     result = this.items
   result
