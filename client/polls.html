@@ -34,8 +34,8 @@
     <div>
       <ul class="sortable">
         {{#each getOrderedItems}}
-          <li class="ui-state-default" id="{{id}}">
-            <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>{{name}}
+          <li class="ui-state-default" id="{{this}}">
+            <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>{{this}}
           </li>
         {{else}}
           <li>Nothing to vote for! Add a few items.</li>

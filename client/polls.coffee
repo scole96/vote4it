@@ -17,20 +17,11 @@ hasVoted = (poll) ->
    _.contains(_.pluck(poll.votes, "user_id"), Meteor.userId())
 
 Template.vote.getOrderedItems = () ->
-  result = []
   votes = findUsersVote this, Meteor.userId()
   if votes
-    for vote in votes.votes
-      result.push _.find(this.items, (item) ->
-        return Number item.id == Number vote
-      )
-    result_ids = _.pluck(result, "id")
-    for item in this.items
-      if !_.contains(result_ids, item.id)
-        result.push item
+    votes.votes.concat _.difference(this.items, votes.votes)
   else
-    result = this.items
-  result
+    this.items
 
 findUsersVote = (poll, user_id) ->
   _.find(poll.votes, (vote) ->
@@ -41,7 +32,7 @@ Template.vote.events(
   'submit #newItemForm' : (event, template) ->
     pollId = $("#poll-id").val()
     name =  $("#item-name").val()
-    result = Meteor.call "addItem", pollId, name
+    Polls.update(pollId, $addToSet: items: name)
     $("#item-name").val("")
     return false
   'click #submit-vote' : (event, template) ->
@@ -75,16 +66,19 @@ Template.results.newItems = () ->
 
 Template.results.sortedResults = () ->
   poll = Polls.findOne(Session.get("poll_id"))
-  _.sortBy(poll.items, (item) ->
-    item.points = pointsFor poll, item.id
-    return item.points * -1
+  result = []
+  for item in poll.items
+    obj = {name: item, points: pointsFor(poll, item)}
+    result.push obj
+  _.sortBy(result, (obj) ->
+    return obj.points * -1
   )
 
-pointsFor = (poll, item_id) ->
+pointsFor = (poll, item) ->
   points = 0
   total = poll.items.length
   for vote in poll.votes
-    location = _.indexOf(vote.votes, item_id+"")
+    location = _.indexOf(vote.votes, item)
     if location>=0
       points = points + (total - location)
     else
