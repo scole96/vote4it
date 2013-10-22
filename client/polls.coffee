@@ -2,31 +2,22 @@ Template.polls.events(
   'submit #newPollForm' : (event, template) ->
     input = event.target.elements[0]
     name = input.value
-    console.log "New Poll with name: #{name}"
-    Polls.insert({name: name, create_date: new Date(), create_user: Meteor.userId(), votes: []})
+    id = Polls.insert({name: name, create_date: new Date(), create_user: Meteor.userId(), votes: {}})
     input.value=""
+    Router.go("/poll/#{id}")
     return false
 )
 
 Template.onepoll.hasVoted = () ->
   poll = Polls.findOne(Session.get("poll_id"))
-  revote = Session.get("revote")
-  return true if hasVoted(poll) and not revote
-
-hasVoted = (poll) ->
-   _.contains(_.pluck(poll.votes, "user_id"), Meteor.userId())
+  poll.votes[Meteor.userId()] and not Session.get("revote")
 
 Template.vote.getOrderedItems = () ->
-  votes = findUsersVote this, Meteor.userId()
-  if votes
-    votes.votes.concat _.difference(this.items, votes.votes)
+  vote = this.votes[Meteor.userId()]
+  if vote
+    vote.votes.concat _.difference(this.items, vote.votes)
   else
     this.items
-
-findUsersVote = (poll, user_id) ->
-  _.find(poll.votes, (vote) ->
-    return vote.user_id is user_id
-  )
 
 Template.vote.events(
   'submit #newItemForm' : (event, template) ->
@@ -39,14 +30,16 @@ Template.vote.events(
     sortedIDs = $(".sortable").sortable( "toArray" )
     pollId = $(event.target).data("poll-id")
     poll = Polls.findOne(pollId)
-    if hasVoted(poll)
-      Polls.update( pollId, { $pull: { "votes" : { user_id: Meteor.userId() } } } )
-    
-    data =
-      user_id: Meteor.userId()
+    if poll.votes[Meteor.userId()]
+      Polls.update( pollId, $unset: "votes" : Meteor.userId()  )
+
+    data = 
       votes: sortedIDs
-      date: new Date()
-    Polls.update(pollId, $addToSet: votes: data)
+      date: new Date()    
+    setModifier = { $set: {} };
+    setModifier.$set['votes.' + Meteor.userId()] = data
+
+    Polls.update(pollId, setModifier)
     Session.set("revote", null)
 )
         
@@ -61,8 +54,9 @@ Template.results.events(
 )
 
 Template.results.newItems = () ->
-  votes = findUsersVote this, Meteor.userId()
-  this.items.length > votes.votes.length
+  vote = this.votes[Meteor.userId()]
+  if vote
+    this.items.length > vote.votes.length
 
 Template.results.sortedResults = () ->
   poll = Polls.findOne(Session.get("poll_id"))
@@ -77,7 +71,7 @@ Template.results.sortedResults = () ->
 pointsFor = (poll, item) ->
   points = 0
   total = poll.items.length
-  for vote in poll.votes
+  for vote in _.values poll.votes
     location = _.indexOf(vote.votes, item)
     if location>=0
       points = points + (total - location)
