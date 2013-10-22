@@ -15,7 +15,8 @@ Template.onepoll.hasVoted = () ->
 Template.vote.getOrderedItems = () ->
   vote = this.votes[Meteor.userId()]
   if vote
-    vote.votes.concat _.difference(this.items, vote.votes)
+    new_items = _.difference(this.items, vote.votes)
+    vote.votes.concat new_items
   else
     this.items
 
