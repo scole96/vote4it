@@ -22,7 +22,15 @@
 
 <template name="onepoll">
   {{#if hasVoted}}
-    {{>results}}
+    <h2>{{name}}</h2>
+    <div>
+      {{#if haveEnoughResults}}
+        {{>results}}
+      {{else}}
+        <span class="label label-warning">No results will be displayed until at least 5 people have voted. Get your friends to vote!</span>
+      {{/if}}
+    </div>
+    <a id="revote">Re-vote</a>
   {{else}}
     {{>vote}}
   {{/if}}
@@ -54,7 +62,6 @@
 
 <template name="results">
   <div>
-    <h2>{{name}}</h2>
     {{#if newItems}}
       <span class="label label-warning">New items were added, you shold revote!</span>
     {{/if}}
@@ -71,7 +78,6 @@
           <li>{{getUserName user_id}}</li>
         {{/each}}
       </div>
-      <a id="revote">Re-vote</a>
     </div>
   </div>
 </template>

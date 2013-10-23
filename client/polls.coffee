@@ -8,9 +8,12 @@ Template.polls.events(
     return false
 )
 
+Template.onepoll.haveEnoughResults = () ->
+  console.log _.keys(this.votes).length
+  _.keys(this.votes).length > 4
+
 Template.onepoll.hasVoted = () ->
-  poll = Polls.findOne(Session.get("poll_id"))
-  poll.votes[Meteor.userId()] and not Session.get("revote")
+  this.votes[Meteor.userId()] and not Session.get("revote")
 
 Template.vote.getOrderedItems = () ->
   vote = this.votes[Meteor.userId()]
