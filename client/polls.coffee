@@ -79,6 +79,4 @@ pointsFor = (poll, item) ->
     location = _.indexOf(vote.votes, item)
     if location>=0
       points = points + (total - location)
-    else
-      points = 0
   points
