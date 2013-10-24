@@ -51,7 +51,7 @@ Template.vote.rendered = () ->
   $( ".sortable" ).sortable()
   $( ".sortable" ).disableSelection()
 
-Template.results.events(
+Template.onepoll.events(
   'click #revote' : (event, template) ->
     pollId = Session.get("poll_id")
     Session.set("revote", true)
