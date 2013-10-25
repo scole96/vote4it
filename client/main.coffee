@@ -34,5 +34,4 @@ class @PollController extends RouteController
   
   data: -> 
     console.log "in poll data with pollId: #{@params.poll_id}"
-    Session.set("poll_id", @params.poll_id)
     return Polls.findOne(@params.poll_id)
