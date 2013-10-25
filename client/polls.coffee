@@ -10,7 +10,7 @@ Template.polls.events(
 
 Template.onepoll.haveEnoughResults = () ->
   console.log _.keys(this.votes).length
-  _.keys(this.votes).length > 4
+  _.keys(this.votes).length > 0
 
 Template.onepoll.hasVoted = () ->
   this.votes[Meteor.userId()] and not Session.get("revote")
@@ -54,7 +54,6 @@ Template.vote.rendered = () ->
 
 Template.onepoll.events(
   'click #revote' : (event, template) ->
-    pollId = Session.get("poll_id")
     Session.set("revote", true)
 )
 
@@ -64,14 +63,16 @@ Template.results.newItems = () ->
     this.items.length > vote.votes.length
 
 Template.results.sortedResults = () ->
-  poll = Polls.findOne(Session.get("poll_id"))
   result = []
-  for item in poll.items
-    obj = {name: item, points: pointsFor(poll, item)}
+  for item in this.items
+    obj = {name: item, points: pointsFor(this, item)}
     result.push obj
   _.sortBy(result, (obj) ->
     return obj.points * -1
   )
+
+Template.results.user_ids = () ->
+  _.keys(this.votes)
 
 pointsFor = (poll, item) ->
   points = 0
