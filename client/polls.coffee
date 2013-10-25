@@ -35,8 +35,9 @@ Template.vote.events(
     pollId = $(event.target).data("poll-id")
     poll = Polls.findOne(pollId)
     if poll.votes[Meteor.userId()]
-      Polls.update( pollId, $unset: "votes" : Meteor.userId()  )
-
+      setModifier = { $unset: {} };
+      setModifier.$unset['votes.' + Meteor.userId()] = 1
+      Polls.update( pollId, setModifier )
     data = 
       votes: sortedIDs
       date: new Date()    
