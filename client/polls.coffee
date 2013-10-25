@@ -10,7 +10,7 @@ Template.polls.events(
 
 Template.onepoll.haveEnoughResults = () ->
   console.log _.keys(this.votes).length
-  _.keys(this.votes).length > 0
+  _.keys(this.votes).length > 4
 
 Template.onepoll.hasVoted = () ->
   this.votes[Meteor.userId()] and not Session.get("revote")
